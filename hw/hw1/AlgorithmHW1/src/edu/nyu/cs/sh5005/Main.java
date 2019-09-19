@@ -55,11 +55,31 @@ class twothree {
 	   }
 	   int query = Integer.parseInt(input.readLine());
 	   for(int i = 0; i< query; i++) {
+		   String[] planet_name = input.readLine().split(" ");
 		   
 	   }
 	   
 	   
 	   output.flush();
+   }
+   
+   static void printAll(Node guide, int h, BufferedWriter output) throws IOException{
+	   if (h==0) {
+		   output.write(((LeafNode)guide).guide+"\n");
+	   }
+	   else {
+		   printAll(((InternalNode)guide).child0,h-1,output);
+		   printAll(((InternalNode)guide).child1,h-1,output);
+		   if (((InternalNode)guide).child2 != null) {
+			   printAll(((InternalNode)guide).child2,h-1,output);
+		   }
+	   }//else	  
+   }//printAll
+   static void printGE(Node guide) {
+	   
+   }
+   static void printLE(Node guide) {
+	   
    }
 
    static void insert(String key, int value, TwoThreeTree tree) {
