@@ -66,7 +66,7 @@ class twothree {
 		   chain[i].key = key_planets;
 	   }
 	   for(Keys key: chain) {
-		   printKeyRange(tree.root,key.key[0],key.key[1],tree.height,output);
+		   printKeyRange((InternalNode)tree.root,key.key[0],key.key[1],tree.height,output);
 	   }
 	   
 	   
@@ -86,10 +86,13 @@ class twothree {
 	   }//else	  
    }//printAll
    static void printKeyGE(Node guide,String key,int h,BufferedWriter output) throws IOException {
-	   Node child0 = ((Node)((InternalNode)guide).child0);
-	   Node child1 = ((Node)((InternalNode)guide).child1);
-	   Node child2 = ((Node)((InternalNode)guide).child2);
+	   Node child0 = new Node(),child1 = new Node(),child2 = new Node();
 	   
+	   if(!(guide instanceof LeafNode)&&guide == null) {
+		   child0 = (((InternalNode)guide).child0);
+		   child1 = (((InternalNode)guide).child1);
+		   child2 = (((InternalNode)guide).child2);
+	   }
 	   if (h == 0) {
 		   if (guide.guide.compareTo(key)>=0) { //in lexicographical order
 			   output.write(guide.guide+"\n");
@@ -102,14 +105,18 @@ class twothree {
 	   else {
 		   printAllKey(child0,h-1,output);
 		   printAllKey(child1,h-1,output);
-		   printKeyGE(child2,key,h-1,output);
+		   if (child2 != null)
+			   printKeyGE(child2,key,h-1,output);
 	   }
    }//printKeyGE
    static void printKeyLE(Node guide,String key,int h,BufferedWriter output) throws IOException {
-	   Node child0 = ((Node)((InternalNode)guide).child0);
-	   Node child1 = ((Node)((InternalNode)guide).child1);
-	   Node child2 = ((Node)((InternalNode)guide).child2);
+	   Node child0 = new Node(),child1 = new Node(),child2 = new Node();
 	   
+	   if(!(guide instanceof LeafNode)) {
+		   child0 = (((InternalNode)guide).child0);
+		   child1 = (((InternalNode)guide).child1);
+		   child2 = (((InternalNode)guide).child2);
+	   }
 	   if (h == 0) {
 		   if (guide.guide.compareTo(key)<=0) { //in lexicographical order
 			   output.write(guide.guide+"\n");
@@ -123,13 +130,18 @@ class twothree {
 	   else {
 		   printAllKey(child0,h-1,output);
 		   printAllKey(child1,h-1,output);
-		   printKeyLE(child2,key,h-1,output);
+		   if (child2 != null)
+			   printKeyLE(child2,key,h-1,output);
 	   }
    }//printKeyLE
    static void printKeyRange(Node guide,String lowK,String highK,int h,BufferedWriter output) throws IOException {
-	   Node child0 = ((Node)((InternalNode)guide).child0);
-	   Node child1 = ((Node)((InternalNode)guide).child1);
-	   Node child2 = ((Node)((InternalNode)guide).child2);
+	   InternalNode child0,child1,child2;
+	   
+	   
+		   child0 = ((InternalNode)guide).child0;
+		   child1 = (((InternalNode)guide).child1);
+		   child2 = (((InternalNode)guide).child2);
+	   
 	   
 	   if (h == 0) {
 		   if (lowK.compareTo(guide.guide)<=0 && highK.compareTo(guide.guide)>=0) {
