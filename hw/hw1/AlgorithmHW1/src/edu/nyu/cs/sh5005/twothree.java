@@ -1,14 +1,12 @@
 package edu.nyu.cs.sh5005;
 
-import java.io.*;
-
 class Node {
    String guide;
    // guide points to max key in subtree rooted at node
 }
 
 class InternalNode extends Node {
-   Node child0,child1,child2;
+   Node child0, child1, child2;
    // child0 and child1 are always non-null
    // child2 is null iff node has only 2 children
 }
@@ -38,144 +36,10 @@ class WorkSpace {
    boolean guideChanged;
    Node[] scratch;
 }
-class Keys {
-	String[] key = new String[1];
-}
+
 class twothree {
 
-   
-   static void printAllKey(Node guide,int h,BufferedWriter output) throws IOException{
-	   if (h==0) {
-		   LeafNode leafPlanet = (LeafNode) guide;
-		   output.write(leafPlanet.guide+" "+leafPlanet.value+"\n");
-	   }
-	   else {
-		   InternalNode guideNode = (InternalNode) guide;
-		   printAllKey(guideNode.child0,h-1,output);
-		   printAllKey(guideNode.child1,h-1,output);
-		   if (guideNode.child2 != null) {
-			   printAllKey(guideNode.child2,h-1,output);
-		   }
-	   }//else	  
-   }//printAll
-   static void printKeyGE(Node guide,String key,int h,BufferedWriter output) throws IOException {
-//	   Node child0 = new Node(),child1 = new Node(),child2 = new Node();
-	   InternalNode guideNode = new InternalNode();
-	   if (!(guide instanceof LeafNode)) {
-		   guideNode = (InternalNode)guide;
-	   }
-	   
-//	   if(!(guide instanceof LeafNode)&&guide == null) {
-//		   child0 = guideNode.child0;
-//		   child1 = guideNode.child1;
-//		   child2 = guideNode.child2;
-//	   }
-	   if (h == 0) {
-		   int compareResult = guide.guide.compareTo(key);
-		   if (guide!= null && compareResult>=0) { //in lexicographical order
-			   LeafNode leafPlanet = (LeafNode) guide;
-			   output.write(leafPlanet.guide+" "+leafPlanet.value+"\n");
-		   }
-		   return;
-		   //printKeyGE(guideNode.child0,key,h-1,output);
-		   
-		   //printAllKey(guideNode.child0,h-1,output);
-		   //printKeyGE(guideNode.child1,key,h-1,output);
-	   }
-	   else {
-		   printAllKey(guideNode.child0,h-1,output);
-		   printAllKey(guideNode.child1,h-1,output);
-		   if (guideNode.child2 != null)
-			   printKeyGE(guideNode.child2,key,h-1,output);
-	   }
-   }//printKeyGE
-   static void printKeyLE(Node guide,String key,int h,BufferedWriter output) throws IOException {
-//	   Node child0 = new Node(),child1 = new Node(),child2 = new Node();
-	   
-	   InternalNode guideNode = new InternalNode();
-	   if (!(guide instanceof LeafNode)) {
-		   guideNode = (InternalNode)guide;
-	   }
-//	   if(!(guide instanceof LeafNode)) {
-//		   child0 = guideNode.child0;
-//		   child1 = guideNode.child1;
-//		   child2 = guideNode.child2;
-//	   }
-	   
-	   
-	   if (h == 0) {
-		   if (guide!= null && guide.guide.compareTo(key)<=0) { //in lexicographical order
-			   LeafNode leafPlanet = (LeafNode) guide;
-			   output.write(leafPlanet.guide+" "+leafPlanet.value+"\n");
-		   }
-		   return;
-//		   printKeyLE(guideNode.child0,key,h-1,output);
-//		   
-//		   printAllKey(guideNode.child0,h-1,output);
-//		   printKeyLE(guideNode.child1,key,h-1,output);
-	   }
-	   else {
-		   printAllKey(guideNode.child0,h-1,output);
-		   printAllKey(guideNode.child1,h-1,output);
-		   if (guideNode.child2 != null)
-			   printKeyLE(guideNode.child2,key,h-1,output);
-	   }
-   }//printKeyLE
-   static void printKeyRange(Node guide,String lowK,String highK,int h,BufferedWriter output) throws IOException {
-//	   Node child0 = new InternalNode(),child1 = new InternalNode(),child2 = new InternalNode();
-	   
-	   InternalNode guideNode = new InternalNode();
-	   if (!(guide instanceof LeafNode)) {
-		   guideNode = (InternalNode)guide;
-	   }
-//	   if(!(guide instanceof LeafNode)) {
-//		   child0 = guideNode.child0;
-//		   child1 = guideNode.child1;
-//		   child2 = guideNode.child2;
-//	   }
-	   
-	   //compare high key and low key, if low key is lexicographically higher, switch them
-	   if(lowK.compareTo(highK)>0) {
-		   String temp =highK;
-		   highK = lowK;
-		   lowK = temp;
-	   }
-	   
-	   if (h == 0) {
-		   if (guide != null && lowK.compareTo(guide.guide)<=0 && highK.compareTo(guide.guide)>=0) {
-			   LeafNode leafPlanet = (LeafNode) guide;
-			   output.write(leafPlanet.guide+" "+leafPlanet.value+"\n");
-		   }
-		   return;
-	   }
-	   else if (highK.compareTo(guideNode.child0.guide)<=0) {
-		   printKeyRange(guideNode.child0,lowK,highK,h-1,output);
-	   }
-	   else if (guideNode.child2 == null || highK.compareTo(guideNode.child1.guide)<=0) {
-		   if (lowK.compareTo(guideNode.child0.guide)<=0) {
-			   printKeyGE(guideNode.child0,lowK,h-1,output);
-			   printKeyLE(guideNode.child1,highK,h-1,output);
-		   }
-		   else {
-			   printKeyRange(guideNode.child1,lowK,highK,h-1,output);
-		   }
-	   }
-	   else {
-		   if (lowK.compareTo(guideNode.child0.guide)<=0) {
-			   printKeyGE(guideNode.child0,lowK,h-1,output);
-			   printAllKey(guideNode.child1,h-1,output);
-			   printKeyLE(guideNode.child2,highK,h-1,output);
-		   }
-		   else if (lowK.compareTo(guideNode.child1.guide)<=0){
-			   printKeyGE(guideNode.child1,lowK,h-1,output);
-			   printKeyLE(guideNode.child2,highK,h-1,output);
-		   }
-		   else {
-			   printKeyRange(guideNode.child2,lowK,highK,h-1,output);
-		   }
-	   }//else
-   }//printKeyRange
-   static void insert(String key,int value,TwoThreeTree tree) {
+   static void insert(String key, int value, TwoThreeTree tree) {
    // insert a key value pair into tree (overwrite existsing value
    // if key is already present)
 
@@ -189,7 +53,7 @@ class twothree {
           tree.height = 0;
       }
       else {
-         WorkSpace ws = doInsert(key,value,tree.root,h);
+         WorkSpace ws = doInsert(key, value, tree.root, h);
 
          if (ws != null && ws.newNode != null) {
          // create a new root
@@ -210,11 +74,11 @@ class twothree {
       }
    }
 
-   static WorkSpace doInsert(String key,int value,Node p,int h) {
+   static WorkSpace doInsert(String key, int value, Node p, int h) {
    // auxiliary recursive routine for insert
 
       if (h == 0) {
-         // we're at the leaf level,so compare and 
+         // we're at the leaf level, so compare and 
          // either update value or insert new leaf
 
          LeafNode leaf = (LeafNode) p; //downcast
@@ -248,32 +112,32 @@ class twothree {
 
          if (key.compareTo(q.child0.guide) <= 0) {
             pos = 0; 
-            ws = doInsert(key,value,q.child0,h-1);
+            ws = doInsert(key, value, q.child0, h-1);
          }
          else if (key.compareTo(q.child1.guide) <= 0 || q.child2 == null) {
             pos = 1;
-            ws = doInsert(key,value,q.child1,h-1);
+            ws = doInsert(key, value, q.child1, h-1);
          }
          else {
             pos = 2; 
-            ws = doInsert(key,value,q.child2,h-1);
+            ws = doInsert(key, value, q.child2, h-1);
          }
 
          if (ws != null) {
             if (ws.newNode != null) {
                // make ws.newNode child # pos + ws.offset of q
 
-               int sz = copyOutChildren(q,ws.scratch);
-               insertNode(ws.scratch,ws.newNode,sz,pos + ws.offset);
+               int sz = copyOutChildren(q, ws.scratch);
+               insertNode(ws.scratch, ws.newNode, sz, pos + ws.offset);
                if (sz == 2) {
                   ws.newNode = null;
-                  ws.guideChanged = resetChildren(q,ws.scratch,0,3);
+                  ws.guideChanged = resetChildren(q, ws.scratch, 0, 3);
                }
                else {
                   ws.newNode = new InternalNode();
                   ws.offset = 1;
-                  resetChildren(q,ws.scratch,0,2);
-                  resetChildren((InternalNode) ws.newNode,ws.scratch,2,2);
+                  resetChildren(q, ws.scratch, 0, 2);
+                  resetChildren((InternalNode) ws.newNode, ws.scratch, 2, 2);
                }
             }
             else if (ws.guideChanged) {
@@ -285,8 +149,9 @@ class twothree {
       }
    }
 
-   static int copyOutChildren(InternalNode q,Node[] x) {
-   // copy children of q into x,and return # of children
+
+   static int copyOutChildren(InternalNode q, Node[] x) {
+   // copy children of q into x, and return # of children
 
       int sz = 2;
       x[0] = q.child0; x[1] = q.child1;
@@ -297,7 +162,7 @@ class twothree {
       return sz;
    }
 
-   static void insertNode(Node[] x,Node p,int sz,int pos) {
+   static void insertNode(Node[] x, Node p, int sz, int pos) {
    // insert p in x[0..sz) at position pos,
    // moving existing extries to the right
 
@@ -308,7 +173,7 @@ class twothree {
    }
 
    static boolean resetGuide(InternalNode q) {
-   // reset q.guide,and return true if it changes.
+   // reset q.guide, and return true if it changes.
 
       String oldGuide = q.guide;
       if (q.child2 != null)
@@ -319,9 +184,10 @@ class twothree {
       return q.guide != oldGuide;
    }
 
-   static boolean resetChildren(InternalNode q,Node[] x,int pos,int sz) {
-   // reset q's children to x[pos..pos+sz),where sz is 2 or 3.
-   // also resets guide,and returns the result of that
+
+   static boolean resetChildren(InternalNode q, Node[] x, int pos, int sz) {
+   // reset q's children to x[pos..pos+sz), where sz is 2 or 3.
+   // also resets guide, and returns the result of that
 
       q.child0 = x[pos]; 
       q.child1 = x[pos+1];
