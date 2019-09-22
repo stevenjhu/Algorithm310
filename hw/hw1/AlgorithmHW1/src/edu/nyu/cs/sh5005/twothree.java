@@ -38,143 +38,143 @@ class WorkSpace {
    boolean guideChanged;
    Node[] scratch;
 }
-class Keys{
+class Keys {
 	String[] key = new String[1];
 }
 class twothree {
 
-   public static void main(String[] args) throws UnsupportedEncodingException,IOException {
-	   BufferedWriter output = new BufferedWriter(new OutputStreamWriter(System.out,"ASCII"),4096);
-	   BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-	   TwoThreeTree tree = new TwoThreeTree();
-	   
-	   int num_planet = Integer.parseInt(input.readLine());
-	   for(int i = 0; i< num_planet; i++) {
-		   String[] list = input.readLine().split(" ");
-		   String key = list[0];
-		   int value = Integer.parseInt(list[1]);
-		   insert(key,value,tree);
-	   }
-	   
-	   int query = Integer.parseInt(input.readLine());
-	   Keys[] chain = new Keys[query];
-	   
-	   
-	   for(int i = 0; i< query; i++) {
-		   String[] key_planets = input.readLine().split(" ");
-		   chain[i] = new Keys();
-		   chain[i].key = key_planets;
-	   }
-	   for(Keys key: chain) {
-		   printKeyRange((InternalNode)tree.root,key.key[0],key.key[1],tree.height,output);
-	   }
-	   
-	   
-	   output.flush();
-   }
    
    static void printAllKey(Node guide,int h,BufferedWriter output) throws IOException{
 	   if (h==0) {
-		   output.write(((LeafNode)guide).guide+"\n");
+		   LeafNode leafPlanet = (LeafNode) guide;
+		   output.write(leafPlanet.guide+" "+leafPlanet.value+"\n");
 	   }
 	   else {
-		   printAllKey(((InternalNode)guide).child0,h-1,output);
-		   printAllKey(((InternalNode)guide).child1,h-1,output);
-		   if (((InternalNode)guide).child2 != null) {
-			   printAllKey(((InternalNode)guide).child2,h-1,output);
+		   InternalNode guideNode = (InternalNode) guide;
+		   printAllKey(guideNode.child0,h-1,output);
+		   printAllKey(guideNode.child1,h-1,output);
+		   if (guideNode.child2 != null) {
+			   printAllKey(guideNode.child2,h-1,output);
 		   }
 	   }//else	  
    }//printAll
    static void printKeyGE(Node guide,String key,int h,BufferedWriter output) throws IOException {
-	   Node child0 = new Node(),child1 = new Node(),child2 = new Node();
-	   
-	   if(!(guide instanceof LeafNode)&&guide == null) {
-		   child0 = (((InternalNode)guide).child0);
-		   child1 = (((InternalNode)guide).child1);
-		   child2 = (((InternalNode)guide).child2);
+//	   Node child0 = new Node(),child1 = new Node(),child2 = new Node();
+	   InternalNode guideNode = new InternalNode();
+	   if (!(guide instanceof LeafNode)) {
+		   guideNode = (InternalNode)guide;
 	   }
+	   
+//	   if(!(guide instanceof LeafNode)&&guide == null) {
+//		   child0 = guideNode.child0;
+//		   child1 = guideNode.child1;
+//		   child2 = guideNode.child2;
+//	   }
 	   if (h == 0) {
-		   if (guide.guide.compareTo(key)>=0) { //in lexicographical order
-			   output.write(guide.guide+"\n");
+		   int compareResult = guide.guide.compareTo(key);
+		   if (guide!= null && compareResult>=0) { //in lexicographical order
+			   LeafNode leafPlanet = (LeafNode) guide;
+			   output.write(leafPlanet.guide+" "+leafPlanet.value+"\n");
 		   }
-		   printKeyGE(child0,key,h-1,output);
+		   return;
+		   //printKeyGE(guideNode.child0,key,h-1,output);
 		   
-		   printAllKey(child0,h-1,output);
-		   printKeyGE(child1,key,h-1,output);
+		   //printAllKey(guideNode.child0,h-1,output);
+		   //printKeyGE(guideNode.child1,key,h-1,output);
 	   }
 	   else {
-		   printAllKey(child0,h-1,output);
-		   printAllKey(child1,h-1,output);
-		   if (child2 != null)
-			   printKeyGE(child2,key,h-1,output);
+		   printAllKey(guideNode.child0,h-1,output);
+		   printAllKey(guideNode.child1,h-1,output);
+		   if (guideNode.child2 != null)
+			   printKeyGE(guideNode.child2,key,h-1,output);
 	   }
    }//printKeyGE
    static void printKeyLE(Node guide,String key,int h,BufferedWriter output) throws IOException {
-	   Node child0 = new Node(),child1 = new Node(),child2 = new Node();
+//	   Node child0 = new Node(),child1 = new Node(),child2 = new Node();
 	   
-	   if(!(guide instanceof LeafNode)) {
-		   child0 = (((InternalNode)guide).child0);
-		   child1 = (((InternalNode)guide).child1);
-		   child2 = (((InternalNode)guide).child2);
+	   InternalNode guideNode = new InternalNode();
+	   if (!(guide instanceof LeafNode)) {
+		   guideNode = (InternalNode)guide;
 	   }
+//	   if(!(guide instanceof LeafNode)) {
+//		   child0 = guideNode.child0;
+//		   child1 = guideNode.child1;
+//		   child2 = guideNode.child2;
+//	   }
+	   
+	   
 	   if (h == 0) {
-		   if (guide.guide.compareTo(key)<=0) { //in lexicographical order
-			   output.write(guide.guide+"\n");
+		   if (guide!= null && guide.guide.compareTo(key)<=0) { //in lexicographical order
+			   LeafNode leafPlanet = (LeafNode) guide;
+			   output.write(leafPlanet.guide+" "+leafPlanet.value+"\n");
 		   }
-		   
-		   printKeyLE(child0,key,h-1,output);
-		   
-		   printAllKey(child0,h-1,output);
-		   printKeyLE(child1,key,h-1,output);
+		   return;
+//		   printKeyLE(guideNode.child0,key,h-1,output);
+//		   
+//		   printAllKey(guideNode.child0,h-1,output);
+//		   printKeyLE(guideNode.child1,key,h-1,output);
 	   }
 	   else {
-		   printAllKey(child0,h-1,output);
-		   printAllKey(child1,h-1,output);
-		   if (child2 != null)
-			   printKeyLE(child2,key,h-1,output);
+		   printAllKey(guideNode.child0,h-1,output);
+		   printAllKey(guideNode.child1,h-1,output);
+		   if (guideNode.child2 != null)
+			   printKeyLE(guideNode.child2,key,h-1,output);
 	   }
    }//printKeyLE
    static void printKeyRange(Node guide,String lowK,String highK,int h,BufferedWriter output) throws IOException {
-	   InternalNode child0,child1,child2;
+//	   Node child0 = new InternalNode(),child1 = new InternalNode(),child2 = new InternalNode();
 	   
+	   InternalNode guideNode = new InternalNode();
+	   if (!(guide instanceof LeafNode)) {
+		   guideNode = (InternalNode)guide;
+	   }
+//	   if(!(guide instanceof LeafNode)) {
+//		   child0 = guideNode.child0;
+//		   child1 = guideNode.child1;
+//		   child2 = guideNode.child2;
+//	   }
 	   
-		   child0 = ((InternalNode)guide).child0;
-		   child1 = (((InternalNode)guide).child1);
-		   child2 = (((InternalNode)guide).child2);
-	   
+	   //compare high key and low key, if low key is lexicographically higher, switch them
+	   if(lowK.compareTo(highK)>0) {
+		   String temp =highK;
+		   highK = lowK;
+		   lowK = temp;
+	   }
 	   
 	   if (h == 0) {
-		   if (lowK.compareTo(guide.guide)<=0 && highK.compareTo(guide.guide)>=0) {
-			   output.write(guide.guide+"\n");
+		   if (guide != null && lowK.compareTo(guide.guide)<=0 && highK.compareTo(guide.guide)>=0) {
+			   LeafNode leafPlanet = (LeafNode) guide;
+			   output.write(leafPlanet.guide+" "+leafPlanet.value+"\n");
 		   }
+		   return;
 	   }
-	   else if (highK.compareTo(child0.guide)<=0) {
-		   printKeyRange(child0,lowK,highK,h-1,output);
+	   else if (highK.compareTo(guideNode.child0.guide)<=0) {
+		   printKeyRange(guideNode.child0,lowK,highK,h-1,output);
 	   }
-	   else if (child2 == null || highK.compareTo(child1.guide)<=0) {
-		   if (lowK.compareTo(child0.guide)<=0) {
-			   printKeyGE(child0,lowK,h-1,output);
-			   printKeyLE(child1,highK,h-1,output);
+	   else if (guideNode.child2 == null || highK.compareTo(guideNode.child1.guide)<=0) {
+		   if (lowK.compareTo(guideNode.child0.guide)<=0) {
+			   printKeyGE(guideNode.child0,lowK,h-1,output);
+			   printKeyLE(guideNode.child1,highK,h-1,output);
 		   }
 		   else {
-			   printKeyRange(child1,lowK,highK,h-1,output);
+			   printKeyRange(guideNode.child1,lowK,highK,h-1,output);
 		   }
 	   }
 	   else {
-		   if (lowK.compareTo(child0.guide)<=0) {
-			   printKeyGE(child0,lowK,h-1,output);
-			   printAllKey(child1,h-1,output);
-			   printKeyLE(child2,highK,h-1,output);
+		   if (lowK.compareTo(guideNode.child0.guide)<=0) {
+			   printKeyGE(guideNode.child0,lowK,h-1,output);
+			   printAllKey(guideNode.child1,h-1,output);
+			   printKeyLE(guideNode.child2,highK,h-1,output);
 		   }
-		   else if (lowK.compareTo(child1.guide)<=0){
-			   printKeyGE(child1,lowK,h-1,output);
-			   printKeyLE(child2,highK,h-1,output);
+		   else if (lowK.compareTo(guideNode.child1.guide)<=0){
+			   printKeyGE(guideNode.child1,lowK,h-1,output);
+			   printKeyLE(guideNode.child2,highK,h-1,output);
 		   }
 		   else {
-			   printKeyRange(child2,lowK,highK,h-1,output);
+			   printKeyRange(guideNode.child2,lowK,highK,h-1,output);
 		   }
-	   }
-   }
+	   }//else
+   }//printKeyRange
    static void insert(String key,int value,TwoThreeTree tree) {
    // insert a key value pair into tree (overwrite existsing value
    // if key is already present)
