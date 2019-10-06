@@ -105,6 +105,11 @@ class twothree {
          InternalNode q = (InternalNode) p; // downcast
          int pos;
          WorkSpace ws;
+         
+         q.child0.value += q.value;
+         q.child1.value += q.value;
+         if (q.child2 != null) ((InternalNode) q).child2.value += q.value;
+         q.value = 0;
 
          if (key.compareTo(q.child0.guide) <= 0) {
             pos = 0; 

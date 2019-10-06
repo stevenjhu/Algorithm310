@@ -31,7 +31,7 @@ public class Solution {
 				   qInfo[1] = temp;
 			   }
 			   Solution.changeKeyRange(tree.root, qInfo[1], qInfo[2], Integer.parseInt(qInfo[3]), tree.height);
-			}else {//type 3
+			}else{//type 3
 				Solution.searchAndprint(tree.root, qInfo[1],tree.height,0);
 			}
 		}
@@ -134,7 +134,7 @@ public class Solution {
 		if(h==0) {
 			if(key.compareTo(guide.guide)==0) {
 				sum+=guide.value;
-				output.write(guide.value+"\n");
+				output.write(sum+"\n");
 				return;
 			}else {
 				output.write("-1\n");
