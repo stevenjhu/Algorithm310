@@ -24,32 +24,25 @@ public class Solution {
 			if(qInfo.length == 3) {//type 1
 				twothree.insert(qInfo[1], Integer.parseInt(qInfo[2]), tree);
 			}else if (qInfo.length == 4) {//type 2
-				Solution.changeKeyRange(tree.root, qInfo[1], qInfo[2], Integer.parseInt(qInfo[3]), tree.height);
+				//compare high key and low key, if low key is lexicographically higher, switch them
+			   if(qInfo[1].compareTo(qInfo[2])>0) {
+				   String temp =qInfo[2];
+				   qInfo[2]= qInfo[1];
+				   qInfo[1] = temp;
+			   }
+			   Solution.changeKeyRange(tree.root, qInfo[1], qInfo[2], Integer.parseInt(qInfo[3]), tree.height);
 			}else {//type 3
-				Solution.searchAndprint(tree.root, qInfo[1],tree.height);
+				Solution.searchAndprint(tree.root, qInfo[1],tree.height,0);
 			}
 		}
 		output.flush();
 	}
-	static void changeAllKey(Node guide,int delta, int h) throws IOException{
-		   if (h==0) {
-			   LeafNode leafPlanet = (LeafNode) guide;
-			   leafPlanet.value+=delta;
-			   return;
-		   }
-		   else {
-			   InternalNode guideNode = (InternalNode) guide;
-			   changeAllKey(guideNode.child0,delta,h-1);
-			   changeAllKey(guideNode.child1,delta,h-1);
-			   if (guideNode.child2 != null) {
-				   changeAllKey(guideNode.child2,delta,h-1);
-			   }
-		   }//else	  
-	}//printAll
+	static void changeAllKey(Node guide,int delta) throws IOException{
+		   guide.value+=delta;	  
+	}//changeAllKey
 	static void changeKeyGE(Node guide,String key,int delta,int h) throws IOException {
 	   if (h == 0) {
-		   int compareResult = guide.guide.compareTo(key);
-		   if (guide!= null && compareResult>=0) { //in lexicographical order
+		   if (guide!= null && key.compareTo(guide.guide)<=0) { //in lexicographical order
 			   LeafNode leafPlanet = (LeafNode) guide;
 			   leafPlanet.value+=delta;
 		   }
@@ -57,27 +50,27 @@ public class Solution {
 	   }
 	   InternalNode guideNode = (InternalNode)guide;
 
-	   if(guideNode.child0.guide.compareTo(key)>=0) {
+	   if(key.compareTo(guideNode.child0.guide)<=0) {
 		   changeKeyGE(guideNode.child0,key,delta,h-1);
-		   changeAllKey(guideNode.child1,delta,h-1);
+		   changeAllKey(guideNode.child1,delta);
 		   if (guideNode.child2 != null) {
-			   changeAllKey(guideNode.child2,delta,h-1);
+			   changeAllKey(guideNode.child2,delta);
 		   }
 	   }
-	   else if (guideNode.child2 == null || guideNode.child1.guide.compareTo(key)>=0){
+	   else if (guideNode.child2 == null || key.compareTo(guideNode.child1.guide)<=0){
 		   changeKeyGE(guideNode.child1,key,delta,h-1);
 		   if (guideNode.child2 != null) {
-			   changeAllKey(guideNode.child2,delta,h-1);
+			   changeAllKey(guideNode.child2,delta);
 		   }
 	   }
 	   else {
 		   changeKeyGE(guideNode.child2,key,delta,h-1);
 	   }
-	}//printKeyGE
+	}//changeKeyGE
 	static void changeKeyLE(Node guide,String key,int delta,int h) throws IOException {	   
 	  
 	   if (h == 0) {
-		   if (guide!= null && guide.guide.compareTo(key)<=0) { //in lexicographical order
+		   if (guide!= null && key.compareTo(guide.guide)>=0) { //in lexicographical order
 			   LeafNode leafPlanet = (LeafNode) guide;
 			   leafPlanet.value+=delta;
 		   }
@@ -89,15 +82,15 @@ public class Solution {
 		   changeKeyLE(guideNode.child0,key,delta,h-1);
 	   }
 	   else if(guideNode.child2 == null || key.compareTo(guideNode.child1.guide) <= 0) {
-		   changeAllKey(guideNode.child0,delta,h-1);
+		   changeAllKey(guideNode.child0,delta);
 		   changeKeyLE(guideNode.child1,key,delta,h-1);
 	   }
 	   else{
-		   changeAllKey(guideNode.child0,delta,h-1);
-		   changeAllKey(guideNode.child1,delta,h-1);
+		   changeAllKey(guideNode.child0,delta);
+		   changeAllKey(guideNode.child1,delta);
 		   changeKeyLE(guideNode.child2,key,delta,h-1);
 		   }
-	}//printKeyLE
+	}//changeKeyLE
 	static void changeKeyRange(Node guide,String lowK,String highK,int delta,int h) throws IOException {
 	   
 	   
@@ -118,14 +111,14 @@ public class Solution {
 			   changeKeyGE(guideNode.child0,lowK,delta,h-1);
 			   changeKeyLE(guideNode.child1,highK,delta,h-1);
 		   }
-		   else {
+		   else {//check
 			   changeKeyRange(guideNode.child1,lowK,highK,delta,h-1);
 		   }
 	   }
 	   else {
 		   if (lowK.compareTo(guideNode.child0.guide)<=0) {
 			   changeKeyGE(guideNode.child0,lowK,delta,h-1);
-			   changeAllKey(guideNode.child1,delta,h-1);
+			   changeAllKey(guideNode.child1,delta);
 			   changeKeyLE(guideNode.child2,highK,delta,h-1);
 		   }
 		   else if (lowK.compareTo(guideNode.child1.guide)<=0){
@@ -136,10 +129,11 @@ public class Solution {
 			   changeKeyRange(guideNode.child2,lowK,highK,delta,h-1);
 		   }
 	   }//else
-	}//printKeyRange
-	static void searchAndprint(Node guide,String key,int h) throws IOException {
+	}//changeKeyRange
+	static void searchAndprint(Node guide,String key,int h,int sum) throws IOException {
 		if(h==0) {
 			if(key.compareTo(guide.guide)==0) {
+				sum+=guide.value;
 				output.write(guide.value+"\n");
 				return;
 			}else {
@@ -148,12 +142,13 @@ public class Solution {
 			}
 		}
 		InternalNode n = (InternalNode) guide;
+		sum+=n.value;
 		if(key.compareTo(n.child0.guide)<=0) {
-			searchAndprint(n.child0,key,h-1);
+			searchAndprint(n.child0,key,h-1,sum);
 		}else if(n.child2 == null || key.compareTo(n.child1.guide)<=0) {
-			searchAndprint(n.child1,key,h-1);
+			searchAndprint(n.child1,key,h-1,sum);
 		}else {
-			searchAndprint(n.child2,key,h-1);
+			searchAndprint(n.child2,key,h-1,sum);
 		}
 	}
 }
