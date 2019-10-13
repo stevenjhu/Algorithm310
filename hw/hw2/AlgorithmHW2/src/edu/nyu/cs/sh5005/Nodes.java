@@ -70,7 +70,7 @@ class twothree {
       }
    }
 
-   static WorkSpace doInsert(String key, int value, Node p, int h) {
+   private static WorkSpace doInsert(String key, int value, Node p, int h) {
    // auxiliary recursive routine for insert
 
       if (h == 0) {
@@ -105,6 +105,11 @@ class twothree {
          InternalNode q = (InternalNode) p; // downcast
          int pos;
          WorkSpace ws;
+         
+         q.child0.value += q.value;
+         q.child1.value += q.value;
+         if (q.child2 != null) ((InternalNode) q).child2.value += q.value;
+         q.value = 0;
 
          if (key.compareTo(q.child0.guide) <= 0) {
             pos = 0; 
@@ -146,7 +151,7 @@ class twothree {
    }
 
 
-   static int copyOutChildren(InternalNode q, Node[] x) {
+   private static int copyOutChildren(InternalNode q, Node[] x) {
    // copy children of q into x, and return # of children
 
       int sz = 2;
@@ -158,7 +163,7 @@ class twothree {
       return sz;
    }
 
-   static void insertNode(Node[] x, Node p, int sz, int pos) {
+   private static void insertNode(Node[] x, Node p, int sz, int pos) {
    // insert p in x[0..sz) at position pos,
    // moving existing extries to the right
 
@@ -168,7 +173,7 @@ class twothree {
       x[pos] = p;
    }
 
-   static boolean resetGuide(InternalNode q) {
+   private static boolean resetGuide(InternalNode q) {
    // reset q.guide, and return true if it changes.
 
       String oldGuide = q.guide;
@@ -181,7 +186,7 @@ class twothree {
    }
 
 
-   static boolean resetChildren(InternalNode q, Node[] x, int pos, int sz) {
+   private static boolean resetChildren(InternalNode q, Node[] x, int pos, int sz) {
    // reset q's children to x[pos..pos+sz), where sz is 2 or 3.
    // also resets guide, and returns the result of that
 
