@@ -20,7 +20,7 @@ public class Solution {
         for (int i=0;i<entry;i++) {
             String[] input = in.readLine().split(" ");
             String key = input[0];
-            long value = Integer.parseInt(input[1]);
+            long value = Long.parseLong(input[1]);
             h.insert(key, value, map);
         }
 
@@ -31,16 +31,15 @@ public class Solution {
             String[] input = in.readLine().split(" ");
             if (Integer.parseInt(input[0])==1) { //type 1
                 String key = input[1];
-                long delta = Integer.parseInt(input[2]);
+                long delta = Long.parseLong(input[2]);
                 edit(key,delta,map,h);
                 
             }else { //type 2
-                long threshold = Integer.parseInt(input[1]);
+                long threshold = Long.parseLong(input[1]);
                 long minCP = h.heap[1].cp;
-                int index = 1;
                 while(minCP<threshold) {
                     h.pop(map);
-                    minCP = h.heap[index++].cp;
+                    minCP = h.heap[1].cp;
                 }
                 System.out.println(map.size());
                 //out.write(map.size());
@@ -122,19 +121,30 @@ class MinHeap{
         }
     }
     void heapifyDown(int pos) {
-        if(left(pos)==-1&&right(pos)==-1) {
+        if((left(pos)==-1&&right(pos)==-1)) {
             return;
         }
+        long cCP = heap[pos].cp;
         long leftCP = heap[left(pos)].cp;
         //int rightCP = heap[right(pos)].cp;
-        if(right(pos)==-1||leftCP<heap[right(pos)].cp) {
-            swap(pos,left(pos));
+        if(right(pos)!=-1) {
+        	long rightCP = heap[right(pos)].cp;
+        	if(leftCP<rightCP&&cCP>leftCP) {
+                swap(pos,left(pos));
+                heapifyDown(left(pos));
+            }else if (cCP>rightCP){
+                swap(pos,right(pos));
+                heapifyDown(right(pos));
+            }
+        }else if(cCP>leftCP){
+        	swap(pos,left(pos));
             heapifyDown(left(pos));
-        }else {
-            swap(pos,right(pos));
-            heapifyDown(right(pos));
         }
+        
     }
+    /*
+     *  if(right(pos)!=-1&&heap[right(pos)].cp<heap[right(pos)].cp)
+     */
     void insert(String name, long cp, HashMap<String,Candidate> map) {//insert at the end and heapifyUp
         Candidate a = new Candidate(name,cp,size);
         map.put(a.name,a);
